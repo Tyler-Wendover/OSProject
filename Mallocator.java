@@ -64,8 +64,10 @@ public class Mallocator {
         FileWriter fffilewriter = new FileWriter(ffout);
         PrintWriter ffprintwriter = new PrintWriter(fffilewriter);
 
+        // Prints out the number of processes to the file
         ffprintwriter.println("FFoutput.data");
 
+        // Prints out the location each process is allocated to for FF
         for(int i = 0; i < pnumber; i++) {
             for(int j = 0; j < msizes.length; j++) {
                 if(psizes[i] <= msizes[j]) {
@@ -90,13 +92,26 @@ public class Mallocator {
         FileWriter bffilewriter = new FileWriter(bfout);
         PrintWriter bfprintwriter = new PrintWriter(bffilewriter);
 
-        // Hard coded for now
+        bfprintwriter.println("BFoutput.data");
+
+        for(int i = 0; i < pnumber; i++) {
+            int bestfit = 9;
+            for(int j = 0; j < msizes.length; j++) {
+                if(psizes[i] <= msizes[j]) {
+                    if(msizes[j] < msizes[bestfit]) {
+                        bestfit = j;
+                    }
+                }
+            } 
+        }
+
+        /* Hard coded for now
         bfprintwriter.println("BFoutput.data");
         bfprintwriter.println("100 310 2");
         bfprintwriter.println("600 790 1");
         bfprintwriter.println("1500 1705 3");
         bfprintwriter.println("-0");
-
+*/
         bfprintwriter.close();
     }
 
