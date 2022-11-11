@@ -17,7 +17,7 @@ public class Mallocator {
         String minput = "Minput.data";
         Scanner mscanner = new Scanner(new File(minput));
         mslots = mscanner.nextInt();
-        System.out.println(mslots);
+        //System.out.println(mslots);
 
         while (mscanner.hasNext()) {
             // Adds sizes of memory slots to array
@@ -28,7 +28,7 @@ public class Mallocator {
                 mslotstart[i] = temp1;
                 msizes[i] = temp3;
                 //Print input file to console
-                System.out.println(temp1 + " " + temp2);
+                //System.out.println(temp1 + " " + temp2);
             }
 
         }
@@ -41,7 +41,7 @@ public class Mallocator {
         String pinput = "Pinput.data";
         Scanner pscanner = new Scanner(new File(pinput));
         pnumber = pscanner.nextInt();
-        System.out.println(pnumber);
+        //System.out.println(pnumber);
 
         // Print out Pinput.data
         while (pscanner.hasNextLine()) {
@@ -49,7 +49,7 @@ public class Mallocator {
                 int temp1 = pscanner.nextInt();
                 int temp2 = pscanner.nextInt();
                 psizes[i] = temp2;
-                System.out.println(temp1 + " " + temp2);
+                //System.out.println(temp1 + " " + temp2);
             }
         }
 
@@ -58,26 +58,27 @@ public class Mallocator {
         WF(pnumber, msizes, psizes, mslotstart);
     }
 
-    static void FF(int pnumber, int[] msizes, int[] psizes, int[] mslotstart) throws IOException {
+    static void FF(int ffpnumber, int[] ffmsizes, int[] ffpsizes, int[] ffmslotstart) throws IOException {
         // First Fit
         File ffout = new File("FFoutput.data");
         FileWriter fffilewriter = new FileWriter(ffout);
         PrintWriter ffprintwriter = new PrintWriter(fffilewriter);
 
+        int[] ffmsizes2 = ffmsizes.clone();
         // Prints out the number of processes to the file
         ffprintwriter.println("FFoutput.data");
 
         // Prints out the location each process is allocated to for FF
-        for(int i = 0; i < pnumber; i++) {
-            for(int j = 0; j < msizes.length; j++) {
-                if(psizes[i] <= msizes[j]) {
+        for(int i = 0; i < ffpnumber; i++) {
+            for(int j = 0; j < ffmsizes2.length; j++) {
+                if(ffpsizes[i] <= ffmsizes2[j]) {
                     int amendpnum = i+1;
                     //System.out.println("Process " + amendpnum + "starts at " + mslotstart[j] + " and ends at " + (mslotstart[j] + psizes[i]));
-                    ffprintwriter.println(mslotstart[j] + " " + (mslotstart[j] + psizes[i]) + " " + amendpnum);
-                    msizes[j] = msizes[j] - psizes[i];
+                    ffprintwriter.println(ffmslotstart[j] + " " + (ffmslotstart[j] + ffpsizes[i]) + " " + amendpnum);
+                    ffmsizes2[j] = ffmsizes2[j] - ffpsizes[i];
                     break;
                 }
-                if(j == msizes.length - 1) {
+                if(j == ffmsizes2.length - 1) {
                     //System.out.println("Process " + (i+1) + " cannot be allocated");
                     ffprintwriter.println(((i+1)-((i+1)*2)));
                 }
@@ -86,23 +87,40 @@ public class Mallocator {
         ffprintwriter.close();
     }
 
-    static void BF(int pnumber, int[] msizes, int[] psizes, int[] mslotstart) throws IOException {
+    static void BF(int bfpnumber, int[] bfmsizes, int[] bfpsizes, int[] bfmslotstart) throws IOException {
         // Best Fit
         File bfout = new File("BFoutput.data");
         FileWriter bffilewriter = new FileWriter(bfout);
         PrintWriter bfprintwriter = new PrintWriter(bffilewriter);
+        
+        int[] bfmsizes2 = bfmsizes.clone();
 
         bfprintwriter.println("BFoutput.data");
 
-        for(int i = 0; i < pnumber; i++) {
-            int bestfit = 9;
-            for(int j = 0; j < msizes.length; j++) {
-                if(psizes[i] <= msizes[j]) {
-                    if(msizes[j] < msizes[bestfit]) {
-                        bestfit = j;
-                    }
+        for(int i = 0; i < bfpnumber; i++) {
+            int bestfit;
+            for(int j = 0; j <= bfmsizes2.length; j++) {
+                if(j == bfmsizes2.length) {
+                    System.out.println("Process " + (i+1) + " cannot be allocated");
+                    bfprintwriter.println(((i+1)-((i+1)*2)));
+                    break;
                 }
-            } 
+                if(bfpsizes[i] <= bfmsizes2[j]) {
+                    bestfit = j;
+                    for(int k = j; k < bfmsizes2.length; k++) {
+                        if(bfpsizes[i] <= bfmsizes2[k]) {
+                            if(bfmsizes2[k] < bfmsizes2[bestfit]) {
+                                bestfit = k;
+                            }
+                        }
+                    }
+                    int amendpnum = i+1;
+                    System.out.println("Process " + amendpnum + " starts at " + bfmslotstart[bestfit] + " and ends at " + (bfmslotstart[bestfit] + bfpsizes[i]));
+                    bfprintwriter.println(bfmslotstart[bestfit] + " " + (bfmslotstart[bestfit] + bfpsizes[i]) + " " + amendpnum);
+                    bfmsizes2[bestfit] = bfmsizes2[bestfit] - bfpsizes[i];
+                    break;
+                }
+            }
         }
 
         /* Hard coded for now
